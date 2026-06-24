@@ -1,7 +1,7 @@
 import tkinter as tk
 from game import Game
 from ia_facile import EasyAI
-
+from ia_difficile import HardAI
 
 class FanoronGUI:
     def __init__(self, root):
@@ -24,6 +24,8 @@ class FanoronGUI:
             font=("Arial", 14)
         )
         self.label.pack()
+        self.ai_hard = HardAI("O")
+        self.use_hard_ai = True   # True = IA ilay alphabeta, False = IA ilay random
 
     def create_board(self):
         frame = tk.Frame(self.root)
@@ -64,7 +66,10 @@ class FanoronGUI:
 
     def ai_play(self):
 
-        move = self.ai.choose_move(self.game.board)
+    # choisir IA
+        ai = self.ai_hard if self.use_hard_ai else self.ai
+
+        move = ai.choose_move(self.game.board)
 
         if move is not None:
             winner = self.game.place(move)
