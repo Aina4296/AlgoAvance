@@ -1,5 +1,7 @@
 import tkinter as tk
 from game import Game
+from ia_facile import EasyAI
+
 
 class FanoronGUI:
     def __init__(self, root):
@@ -7,6 +9,10 @@ class FanoronGUI:
         self.root.title("Fanoron-telo")
 
         self.game = Game()
+
+        # IA facile (joue O)
+        self.ai = EasyAI("O")
+        self.human_vs_ai = True
 
         self.buttons = []
 
@@ -36,17 +42,42 @@ class FanoronGUI:
             self.buttons.append(btn)
 
     def click(self, pos):
-        winner = self.game.place(pos)
 
-        self.update_board()
+        # Joueur humain (X)
+        if self.game.current_player == "X":
 
-        if winner:
-            self.label.config(text=f"Victoire de {winner}")
-            self.disable_buttons()
-        else:
+            winner = self.game.place(pos)
+            self.update_board()
+
+            if winner:
+                self.label.config(text=f"Victoire de {winner}")
+                self.disable_buttons()
+                return
+
+            # Tour IA
+            if self.human_vs_ai and self.game.current_player == "O":
+                self.root.after(500, self.ai_play)
+
             self.label.config(
                 text=f"Tour du joueur {self.game.current_player}"
             )
+
+    def ai_play(self):
+
+        move = self.ai.choose_move(self.game.board)
+
+        if move is not None:
+            winner = self.game.place(move)
+            self.update_board()
+
+            if winner:
+                self.label.config(text=f"Victoire de {winner}")
+                self.disable_buttons()
+                return
+
+        self.label.config(
+            text=f"Tour du joueur {self.game.current_player}"
+        )
 
     def update_board(self):
         for i in range(9):
